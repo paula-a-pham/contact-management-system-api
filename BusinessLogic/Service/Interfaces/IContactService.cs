@@ -10,7 +10,8 @@ namespace BusinessLogic.Service.Interfaces
 {
     public interface IContactService
     {
-        Task<ICollection<Contact>> GetAllContactsAsync();
-        Task<ResultDto> GetContactById(int contactId);
+        Task<ResultDto> AddNewContactAsync(ContactDto dto);
+        Task<IEnumerable<Contact>> GetAllContactsAsync();
+        Task<ResultDto> GetContactByIdAsync(int contactId);
     }
 }

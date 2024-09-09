@@ -3,6 +3,7 @@ using BusinessLogic.Service.Interfaces;
 using Data;
 using Data.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,12 +21,12 @@ namespace BusinessLogic.Service.Implementation
             _context = context;
         }
 
-        public async Task<ICollection<Contact>> GetAllContactsAsync()
+        public async Task<IEnumerable<Contact>> GetAllContactsAsync()
         {
             return await _context.Contacts.Include(c => c.ContactCategory).ToListAsync();
         }
 
-        public async Task<ResultDto> GetContactById(int contactId)
+        public async Task<ResultDto> GetContactByIdAsync(int contactId)
         {
             var contact = await _context.Contacts.Where(c => c.ContactId == contactId).SingleOrDefaultAsync();
             if(contact != null)
@@ -41,6 +42,67 @@ namespace BusinessLogic.Service.Implementation
             {
                 NotFound = true,
                 HasError = false,
+            };
+        }
+
+        public async Task<ResultDto> AddNewContactAsync(ContactDto dto)
+        {
+            if(dto != null && !dto.FirstName.IsNullOrEmpty() && !dto.PhoneNumber.IsNullOrEmpty())
+            {
+                try
+                {
+                    var existCheck = await _context.Contacts.AnyAsync(c => c.PhoneNumber == dto.PhoneNumber);
+                    if (!existCheck)
+                    {
+                        Contact contact = new Contact
+                        {
+                            FirstName = dto.FirstName,
+                            LastName = dto.LastName,
+                            PhoneNumber = dto.PhoneNumber,
+                            EmailAddress = dto.EmailAddress,
+                            Image = dto.Image,
+                            ContactCategoryId = dto.ContactCategoryId,
+                        };
+                        await _context.Contacts.AddAsync(contact);
+                        int saveResult = _context.SaveChanges();
+                        if (saveResult > 0)
+                        {
+                            return new ResultDto
+                            {
+                                Result = contact,
+                                NotFound = false,
+                                HasError = false,
+                            };
+                        }
+                        return new ResultDto
+                        {
+                            NotFound = false,
+                            HasError = true,
+                            ErrorMessage = "Contact Not Added.",
+                        };
+                    }
+                    return new ResultDto
+                    {
+                        NotFound = false,
+                        HasError = true,
+                        ErrorMessage = "Phone Number Is Already Exist.",
+                    };
+                }
+                catch (Exception ex)
+                {
+                    return new ResultDto
+                    {
+                        NotFound = false,
+                        HasError = true,
+                        ErrorMessage = ex.Message
+                    };
+                }
+            }
+            return new ResultDto
+            {
+                NotFound = false,
+                HasError = true,
+                ErrorMessage = "Empty Contact",
             };
         }
     }
