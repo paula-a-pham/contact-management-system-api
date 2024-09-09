@@ -13,5 +13,6 @@ namespace BusinessLogic.Service.Interfaces
         Task<ResultDto> AddNewContactAsync(ContactDto dto);
         Task<IEnumerable<Contact>> GetAllContactsAsync();
         Task<ResultDto> GetContactByIdAsync(int contactId);
+        Task<ResultDto> UpdateContactAsync(int id, ContactDto dto);
     }
 }

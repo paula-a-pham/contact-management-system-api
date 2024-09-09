@@ -100,5 +100,64 @@ namespace BusinessLogic.Service.Implementation
                 ErrorMessage = "Empty Contact",
             };
         }
+
+        public async Task<ResultDto> UpdateContactAsync(int id, ContactDto dto)
+        {
+            Contact? contact = await _context.Contacts.Where(c => c.ContactId == id).SingleOrDefaultAsync();
+            if (contact != null)
+            {
+                try
+                {
+                    bool existCheck = await _context.Contacts.AnyAsync(c => c.PhoneNumber == dto.PhoneNumber);
+                    if (!existCheck)
+                    {
+                        contact.FirstName = dto.FirstName;
+                        contact.LastName = dto.LastName;
+                        contact.PhoneNumber = dto.PhoneNumber;
+                        contact.EmailAddress = dto.EmailAddress;
+                        contact.Image = dto.Image;
+                        contact.ContactCategoryId = dto.ContactCategoryId;
+                        _context.Contacts.Update(contact);
+                        int saveResult = _context.SaveChanges();
+                        if (saveResult > 0)
+                        {
+                            return new ResultDto
+                            {
+                                Result = contact,
+                                NotFound = false,
+                                HasError = false,
+                            };
+                        }
+                        return new ResultDto
+                        {
+                            NotFound = false,
+                            HasError = true,
+                            ErrorMessage = "Contact Not Updated.",
+                        };
+                    }
+                    return new ResultDto
+                    {
+                        NotFound = false,
+                        HasError = true,
+                        ErrorMessage = "Phone Number Is Already Exist.",
+                    };
+
+                }
+                catch (Exception ex)
+                {
+                    return new ResultDto
+                    {
+                        NotFound = false,
+                        HasError = true,
+                        ErrorMessage = ex.Message
+                    };
+                }
+            }
+            return new ResultDto
+            {
+                NotFound = true,
+                HasError = false,
+            };
+        }
     }
 }
