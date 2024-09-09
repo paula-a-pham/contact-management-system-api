@@ -159,5 +159,35 @@ namespace BusinessLogic.Service.Implementation
                 HasError = false,
             };
         }
+
+        public async Task<ResultDto> DeleteContactByIdAsync(int id)
+        {
+            Contact? contact = await _context.Contacts.Where(c => c.ContactId == id).SingleOrDefaultAsync();
+            if (contact != null)
+            {
+                _context.Contacts.Remove(contact);
+                int saveResult = _context.SaveChanges();
+                if (saveResult > 0)
+                {
+                    return new ResultDto
+                    {
+                        Result = contact,
+                        NotFound = false,
+                        HasError = false,
+                    };
+                }
+                return new ResultDto
+                {
+                    NotFound = false,
+                    HasError = true,
+                    ErrorMessage = "Contact Not Deleted.",
+                };
+            }
+            return new ResultDto
+            {
+                NotFound = true,
+                HasError = false,
+            };
+        }
     }
 }
