@@ -11,7 +11,7 @@ namespace BusinessLogic.ServiceConfigurations
 {
     public static class ContextConfigurator
     {
-        public static void ApplicationContextConfigurator(this IServiceCollection services, string connectionString)
+        public static void ApplicationContextConfigurator(this IServiceCollection services, string? connectionString)
         {
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
         }
