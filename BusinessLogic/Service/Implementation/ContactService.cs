@@ -50,7 +50,7 @@ namespace BusinessLogic.Service.Implementation
 
         public async Task<ResultDto> AddNewContactAsync(ContactDto dto)
         {
-            if(dto != null && !dto.FirstName.IsNullOrEmpty() && !dto.PhoneNumber.IsNullOrEmpty())
+            if(!dto.FirstName.IsNullOrEmpty() && !dto.PhoneNumber.IsNullOrEmpty())
             {
                 try
                 {
