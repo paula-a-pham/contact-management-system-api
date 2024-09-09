@@ -24,14 +24,38 @@ namespace BusinessLogic.Service.Implementation
             _contactDefinitionHelper = contactDefinitionHelper;
         }
 
-        public async Task<IEnumerable<Contact>> GetAllContactsAsync()
+        public async Task<IEnumerable<ContactDto>> GetAllContactsAsync()
         {
-            return await _context.Contacts.Include(c => c.ContactCategory).ToListAsync();
+            return await _context.Contacts.Include(c => c.ContactCategory).Select(c => new ContactDto
+            {
+                ContactId = c.ContactId,
+                FirstName = c.FirstName,
+                LastName = c.LastName,
+                PhoneNumber = c.PhoneNumber,
+                EmailAddress = c.EmailAddress,
+                Image = c.Image,
+                ContactCategoryId = c.ContactCategoryId,
+                CategoryName = c.ContactCategory != null ? c.ContactCategory.Name : ""
+            }).ToListAsync();
         }
 
         public async Task<ResultDto> GetContactByIdAsync(int contactId)
         {
-            var contact = await _context.Contacts.Where(c => c.ContactId == contactId).SingleOrDefaultAsync();
+            var contact = await _context.Contacts
+                .Where(c => c.ContactId == contactId)
+                .Include(c => c.ContactCategory)
+                .Select(c => new ContactDto
+                {
+                    ContactId = c.ContactId,
+                    FirstName = c.FirstName,
+                    LastName = c.LastName,
+                    PhoneNumber = c.PhoneNumber,
+                    EmailAddress = c.EmailAddress,
+                    Image = c.Image,
+                    ContactCategoryId = c.ContactCategoryId,
+                    CategoryName = c.ContactCategory != null ? c.ContactCategory.Name : ""
+                })
+                .SingleOrDefaultAsync();
             if(contact != null)
             {
                 return new ResultDto
