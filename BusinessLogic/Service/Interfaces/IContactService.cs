@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,6 @@ namespace BusinessLogic.Service.Interfaces
 {
     public interface IContactService
     {
+        Task<ICollection<Contact>> GetAllContactsAsync();
     }
 }
