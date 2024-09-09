@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BusinessLogic.Service.Interfaces
+namespace BusinessLogic.Service.Implementation
 {
-    public interface IContact
+    public class ContactService
     {
     }
 }
