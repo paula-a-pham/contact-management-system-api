@@ -1,4 +1,5 @@
 ﻿using BusinessLogic.DTOs;
+using BusinessLogic.Helpers;
 using BusinessLogic.Service.Interfaces;
 using Data;
 using Data.Models;
@@ -15,10 +16,12 @@ namespace BusinessLogic.Service.Implementation
     public class ContactService : IContactService
     {
         private readonly ApplicationDbContext _context;
+        private readonly ContactDefinitionHelper _contactDefinitionHelper;
 
-        public ContactService(ApplicationDbContext context)
+        public ContactService(ApplicationDbContext context, ContactDefinitionHelper contactDefinitionHelper)
         {
             _context = context;
+            _contactDefinitionHelper = contactDefinitionHelper;
         }
 
         public async Task<IEnumerable<Contact>> GetAllContactsAsync()
@@ -54,15 +57,7 @@ namespace BusinessLogic.Service.Implementation
                     var existCheck = await _context.Contacts.AnyAsync(c => c.PhoneNumber == dto.PhoneNumber);
                     if (!existCheck)
                     {
-                        Contact contact = new Contact
-                        {
-                            FirstName = dto.FirstName,
-                            LastName = dto.LastName,
-                            PhoneNumber = dto.PhoneNumber,
-                            EmailAddress = dto.EmailAddress,
-                            Image = dto.Image,
-                            ContactCategoryId = dto.ContactCategoryId,
-                        };
+                        Contact contact = _contactDefinitionHelper.DefineContact(dto);
                         await _context.Contacts.AddAsync(contact);
                         int saveResult = _context.SaveChanges();
                         if (saveResult > 0)
