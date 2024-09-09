@@ -1,4 +1,5 @@
-﻿using BusinessLogic.Service.Interfaces;
+﻿using BusinessLogic.DTOs;
+using BusinessLogic.Service.Interfaces;
 using Data;
 using Data.Models;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,25 @@ namespace BusinessLogic.Service.Implementation
         public async Task<ICollection<Contact>> GetAllContactsAsync()
         {
             return await _context.Contacts.Include(c => c.ContactCategory).ToListAsync();
+        }
+
+        public async Task<ResultDto> GetContactById(int contactId)
+        {
+            var contact = await _context.Contacts.Where(c => c.ContactId == contactId).SingleOrDefaultAsync();
+            if(contact != null)
+            {
+                return new ResultDto
+                {
+                    Result = contact,
+                    NotFound = false,
+                    HasError = false,
+                };
+            }
+            return new ResultDto
+            {
+                NotFound = true,
+                HasError = false,
+            };
         }
     }
 }
