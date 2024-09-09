@@ -17,7 +17,7 @@ namespace ContactManagementSystem.Controllers
             _contactService = contactService;
         }
 
-        [HttpGet]
+        [HttpGet("[Action]")]
         public async Task<IActionResult> GetAllContactsAsync()
         {
             var result = await _contactService.GetAllContactsAsync();
@@ -43,7 +43,7 @@ namespace ContactManagementSystem.Controllers
             return BadRequest(new { Message = "UnExpected Error" });
         }
 
-        [HttpPost]
+        [HttpPost("[Action]")]
         public async Task<IActionResult> AddNewContactAsync([FromBody]ContactDto dto)
         {
             var result = await _contactService.AddNewContactAsync(dto);
@@ -62,8 +62,8 @@ namespace ContactManagementSystem.Controllers
             return BadRequest(new { Message = "UnExpected Error" });
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateContactAsync(int id, ContactDto dto)
+        [HttpPut("[Action]/{id}")]
+        public async Task<IActionResult> UpdateContactAsync(int id, [FromBody] ContactDto dto)
         {
             var result = await _contactService.UpdateContactAsync(id, dto);
             if (result.Result != null)
@@ -81,7 +81,7 @@ namespace ContactManagementSystem.Controllers
             return BadRequest(new { Message = "UnExpected Error" });
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("[Action]/{id}")]
         public async Task<IActionResult> DeleteContactByIdAsync(int id)
         {
             var result = await _contactService.DeleteContactByIdAsync(id);
