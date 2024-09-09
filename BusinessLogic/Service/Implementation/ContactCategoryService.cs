@@ -22,14 +22,48 @@ namespace BusinessLogic.Service.Implementation
             _context = context;
         }
 
-        public async Task<IEnumerable<ContactCategory>> GetAllContactCategoriesAsync()
+        public async Task<IEnumerable<ContactCategoryDto>> GetAllContactCategoriesAsync()
         {
-            return await _context.ContactCategories.Include(cc => cc.Contacts).ToListAsync();
+            return await _context.ContactCategories.Include(cc => cc.Contacts).Select(cc => new ContactCategoryDto
+            {
+                ContactCategoryId = cc.ContactCategoryId,
+                Name = cc.Name,
+                Contacts = cc.Contacts != null ? cc.Contacts.Select(ccc => new ContactDto
+                {
+                    ContactId = ccc.ContactId,
+                    FirstName = ccc.FirstName,
+                    LastName = ccc.LastName,
+                    PhoneNumber = ccc.PhoneNumber,
+                    EmailAddress = ccc.EmailAddress,
+                    Image = ccc.Image,
+                    ContactCategoryId = ccc.ContactCategoryId,
+                    CategoryName = ccc.ContactCategory != null ? ccc.ContactCategory.Name : ""
+                }).ToList() : new List<ContactDto>()
+            }).ToListAsync();
         }
 
         public async Task<ResultDto> GetContactCategoryByIdAsync(int contactCatrgoryId)
         {
-            var category = await _context.ContactCategories.Where(cc => cc.ContactCategoryId == contactCatrgoryId).SingleOrDefaultAsync();
+            var category = await _context.ContactCategories
+                .Where(cc => cc.ContactCategoryId == contactCatrgoryId)
+                .Include(cc => cc.Contacts)
+                .Select(cc => new ContactCategoryDto
+                {
+                    ContactCategoryId = cc.ContactCategoryId,
+                    Name = cc.Name,
+                    Contacts = cc.Contacts != null ? cc.Contacts.Select(ccc => new ContactDto
+                    {
+                        ContactId = ccc.ContactId,
+                        FirstName = ccc.FirstName,
+                        LastName = ccc.LastName,
+                        PhoneNumber = ccc.PhoneNumber,
+                        EmailAddress = ccc.EmailAddress,
+                        Image = ccc.Image,
+                        ContactCategoryId = ccc.ContactCategoryId,
+                        CategoryName = ccc.ContactCategory != null ? ccc.ContactCategory.Name : ""
+                    }).ToList() : new List<ContactDto>()
+                })
+                .SingleOrDefaultAsync();
             if (category != null)
             {
                 return new ResultDto
