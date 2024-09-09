@@ -19,5 +19,7 @@ namespace Data.Models
         [MaxLength(255)]
         public string? EmailAddress { get; set; }
         public string? Image { get; set; }
+        public int? ContactCategoryId { get; set; }
+        public ContactCategory? ContactCategory { get; set; }
     }
 }

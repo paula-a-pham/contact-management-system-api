@@ -12,5 +12,6 @@ namespace Data.Models
         public int ContactCategoryId { get; set; }
         [MaxLength(255)]
         public required string Name { get; set; }
+        public ICollection<Contact>? Contacts { get; set; }
     }
 }
